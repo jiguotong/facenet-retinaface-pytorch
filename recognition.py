@@ -13,26 +13,10 @@ from nets.retinaface.retinaface import RetinaFace
 from utils.anchors import Anchors
 from utils.config import cfg_mnet, cfg_re50
 from utils.utils import (Alignment_1, compare_faces, letterbox_image,
-                         preprocess_input)
+                         preprocess_input, show_config, cv2ImgAddText)
 from utils.utils_bbox import (decode, decode_landm, non_max_suppression,
                               retinaface_correct_boxes)
 
-
-#--------------------------------------#
-#   写中文需要转成PIL来写。
-#--------------------------------------#
-def cv2ImgAddText(img, label, left, top, textColor=(255, 255, 255)):
-    img = Image.fromarray(np.uint8(img))
-    #---------------#
-    #   设置字体
-    #---------------#
-    font = ImageFont.truetype(font='model_data/simhei.ttf', size=20)
-
-    draw = ImageDraw.Draw(img)
-    label = label.encode('utf-8')
-    draw.text((left, top), str(label,'UTF-8'), fill=textColor, font=font)
-    return np.asarray(img)
-    
 #--------------------------------------#
 #   一定注意backbone和model_path的对应。
 #   在更换facenet_model后，
@@ -107,10 +91,8 @@ class FaceRecognition(object):
     #   初始化Retinaface
     #---------------------------------------------------#
     def __init__(self, encoding=0, **kwargs):
-        self.__dict__.update(self._defaults)
-        for name, value in kwargs.items():
-            setattr(self, name, value)
-
+        self._defaults.update(kwargs)               ## 更新传进来的参数到_defaults
+        self.__dict__.update(self._defaults)        ## 更新_defaults到self属性
         #---------------------------------------------------#
         #   不同主干网络的config信息
         #---------------------------------------------------#
@@ -140,7 +122,7 @@ class FaceRecognition(object):
                 if not encoding:
                     print("载入已有人脸特征失败，请检查database_code_dir下面是否生成了相关的人脸特征文件。")
                 pass
-
+        show_config(**self._defaults)
     #---------------------------------------------------#
     #   获得所有的分类
     #---------------------------------------------------#

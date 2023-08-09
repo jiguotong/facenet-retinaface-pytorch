@@ -2,7 +2,7 @@ import math
 
 import cv2
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 
 #---------------------------------------------------#
 #   对输入图像进行resize
@@ -73,3 +73,29 @@ def Alignment_1(img,landmark):
     new_landmark = np.array(new_landmark)
 
     return new_img, new_landmark
+
+
+def show_config(**kwargs):
+    print('Configurations:')
+    print('-' * 70)
+    print('|%25s | %40s|' % ('keys', 'values'))
+    print('-' * 70)
+    for key, value in kwargs.items():
+        print('|%25s | %40s|' % (str(key), str(value)))
+    print('-' * 70)
+
+
+#--------------------------------------#
+#   写中文需要转成PIL来写。
+#--------------------------------------#
+def cv2ImgAddText(img, label, left, top, textColor=(255, 255, 255)):
+    img = Image.fromarray(np.uint8(img))
+    #---------------#
+    #   设置字体
+    #---------------#
+    font = ImageFont.truetype(font='model_data/simhei.ttf', size=20)
+
+    draw = ImageDraw.Draw(img)
+    label = label.encode('utf-8')
+    draw.text((left, top), str(label,'UTF-8'), fill=textColor, font=font)
+    return np.asarray(img)
