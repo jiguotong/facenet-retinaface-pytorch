@@ -1,0 +1,4 @@
+*.pyc
+data/database/
+data/input_image/
+data/output_image/
